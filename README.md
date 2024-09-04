@@ -68,12 +68,7 @@ Place the `dump.sql` file into the **import** folder if you prefer or if the aut
 4. **Run:**
 
 ```bash
-docker compose up
-```
-or
-
-```bash
-docker compose up -d
+docker compose up --build
 ```
 
 This will:
