@@ -6,6 +6,13 @@ readonly GREEN='\033[0;32m'
 readonly NC='\033[0m' # No Color
 
 readonly DATA_DIR="/app/data"
+readonly READY_FILE="$DATA_DIR/tmp/srdb_replace.txt"
+
+# clear the ready file
+if [ -f "$READY_FILE" ]; then
+  rm $READY_FILE
+fi
+
 # Loop until the specified file is found, indicating the previous job is done
 while [ ! -f $DATA_DIR/tmp/tunnel_step_ready.txt ]; do
   echo "[+] Waiting for tunnel job..."
@@ -62,10 +69,10 @@ echo -e "[+] Wait 15s please ..."
 sleep 15
 cloudflare_random_url=$(grep -oE 'https://[^ ]+trycloudflare\.com\b' "$DATA_DIR/tmp/tunnel_step_ready.txt")
 echo -e "[+] Replacing from $local_site_url to $cloudflare_random_url ..."
-php "$SRDB_CLI_FILE" -h mysql -n "$SRDB_DATABASE" -u "$SRDB_USER" -p "$SRDB_PASSWORD" -s "$local_site_url" -r "$cloudflare_random_url" > "$DATA_DIR/tmp/srdb_replace.txt"
-replace_failed=$(grep -oE 'db:' "$DATA_DIR/tmp/srdb_replace.txt")
+php "$SRDB_CLI_FILE" -h mysql -n "$SRDB_DATABASE" -u "$SRDB_USER" -p "$SRDB_PASSWORD" -s "$local_site_url" -r "$cloudflare_random_url" > "$READY_FILE"
+replace_failed=$(grep -oE 'db:' "$READY_FILE")
 if [ "" != "$replace_failed" ]; then
-  error_response=$(cat $DATA_DIR/tmp/srdb_replace.txt)
+  error_response=$(cat $READY_FILE)
   echo -e "${RED}[x]${NC} Error: $error_response"
   exit 1
 fi
