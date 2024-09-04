@@ -1,0 +1,106 @@
+name: Create Release Tag, Package
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config user.name "${{ secrets.USER_NAME }}"
+          git config user.email "${{ secrets.USER_EMAIL }}"
+
+      - name: Fetch all tags
+        run: |
+          git fetch --tags
+
+      - name: List all tags
+        run: |
+          echo "Listing all tags:"
+          git tag --list
+
+      - name: Bump Version and Create Tag
+        id: get_tag
+        run: |
+          # Get the latest tag
+          LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+          
+          # Debug: Show the latest tag
+          echo "LATEST_TAG=$LATEST_TAG"
+
+          if [ -z "$LATEST_TAG" ]; then
+            # Default version if no tags exist
+            VERSION="1.0.0"
+          else
+            # Remove 'v' prefix
+            LATEST_TAG_NO_V=$(echo $LATEST_TAG | sed 's/^v//')
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST_TAG_NO_V"
+            
+            # Increment patch version
+            PATCH=$((PATCH + 1))
+            
+            # Check if patch version exceeds 9
+            if [ "$PATCH" -gt 9 ]; then
+              PATCH=0
+              MINOR=$((MINOR + 1))
+              # Check if minor version exceeds 9
+              if [ "$MINOR" -gt 9 ]; then
+                MINOR=0
+                MAJOR=$((MAJOR + 1))
+              fi
+            fi
+            
+            VERSION="$MAJOR.$MINOR.$PATCH"
+          fi
+
+          # Debug: Show the new version to be created
+          echo "VERSION=$VERSION"
+
+          # Check if the new version already exists
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists, aborting."
+            exit 1
+          fi
+
+          # Create and push the new tag
+          git tag -a "v$VERSION" -m "Release version v$VERSION"
+          git push origin "v$VERSION"
+
+          # Output the new version for subsequent steps
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Release on GitHub
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ env.VERSION }}"
+          release_name: "v${{ env.VERSION }}"
+          draft: false
+          prerelease: false
+
+      - name: Get Repository Name
+        id: repo_name
+        run: echo "::set-output name=repo_name::$(basename -s .git `git config --get remote.origin.url`)"
+
+      - name: Create a ZIP package
+        run: |
+          zip -r "${{ steps.repo_name.outputs.repo_name }}.zip" . -x "*.github*" -x "release/*"
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ steps.repo_name.outputs.repo_name }}.zip
+          asset_name: ${{ steps.repo_name.outputs.repo_name }}.zip
+          asset_content_type: application/zip

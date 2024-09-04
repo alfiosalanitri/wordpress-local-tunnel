@@ -1,0 +1,106 @@
+name: ${COMPOSE_PROJECT_NAME}
+services:
+  database_dump:
+    build: 
+      context: ./services/database_dump
+      dockerfile: Dockerfile
+    environment:
+      WORDPRESS_MYSQL_HOST: "${WORDPRESS_MYSQL_HOST}"
+      WORDPRESS_MYSQL_PORT: "${WORDPRESS_MYSQL_PORT}"
+      DB_DUMP_ARGS: "${DB_DUMP_ARGS}"
+    volumes:
+      - ${WORDPRESS_INSTALL_DIR}/wp-config.php:/app/wp-config.php
+      - ./import:/app/import/
+      - ./data:/app/data
+      - ./services/database_dump/src/main.sh:/app/data/scripts/database_dump_main.sh
+    networks:
+      - network
+
+  mysql:
+    build: 
+      context: ./services/mysql
+      dockerfile: Dockerfile
+    ports:
+      - "${MYSQL_DOCKER_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_DOCKER_ROOT_USER}"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "${MYSQL_DOCKER_DATABASE}"
+      MYSQL_INITDB_ARGS: "--max_allowed_packet=16M"
+    volumes:
+      - ./data:/app/data
+      - ./services/mysql/src/main.sh:/app/data/scripts/mysql_main.sh
+    depends_on:
+      - database_dump
+    networks:
+      - network
+
+  generate_wp_config_preview:
+    build: 
+      context: ./services/generate_wp_config_preview
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_DOCKER_DATABASE: "${MYSQL_DOCKER_DATABASE}"
+      MYSQL_DOCKER_ROOT_USER: "${MYSQL_DOCKER_ROOT_USER}"
+      MYSQL_DOCKER_ROOT_PASSWORD: "${MYSQL_DOCKER_ROOT_PASSWORD}"
+      WORDPRESS_DEBUG: "${WORDPRESS_DEBUG}"
+      WORDPRESS_DEBUG_LOG: "${WORDPRESS_DEBUG_LOG}"
+      WORDPRESS_DEBUG_DISPLAY: "${WORDPRESS_DEBUG_DISPLAY}"
+    volumes:
+      - ./data:/app/data
+      - ./services/generate_wp_config_preview/src/wp-config-sample.php:/app/data/wp-config-sample.php
+      - ./services/generate_wp_config_preview/src/main.sh:/app/data/scripts/generate_wp_config_preview.sh
+    depends_on:
+      - mysql
+    networks:
+      - network
+
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile
+    ports:
+      - "${WEB_DOCKER_PORT}:80"
+    volumes:
+      - "${WORDPRESS_INSTALL_DIR}:/var/www/html"
+      - ./data:/app/data
+      - ./services/web/src/main.sh:/app/data/scripts/web_main.sh
+    depends_on:
+      - generate_wp_config_preview
+    networks:
+      - network
+
+  tunnel:
+    build:
+      context: ./services/tunnel
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+    volumes:
+      - ./data:/app/data
+      - ./services/tunnel/src/main.sh:/app/data/scripts/tunnel_main.sh
+    networks:
+      - network
+
+  srdb_replace:
+    build: 
+      context: ./services/srdb_replace
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_DOCKER_DATABASE: "${MYSQL_DOCKER_DATABASE}"
+      MYSQL_DOCKER_ROOT_USER: "${MYSQL_DOCKER_ROOT_USER}"
+      MYSQL_DOCKER_ROOT_PASSWORD: "${MYSQL_DOCKER_ROOT_PASSWORD}"
+      WORDPRESS_LOCAL_URL: "${WORDPRESS_LOCAL_URL}"
+    volumes:
+      - ./data:/app/data
+      - ./services/srdb_replace/src/main.sh:/app/data/scripts/srdb_replace_main.sh
+      - ./services/srdb_replace/src/srdb-script.tar:/app/data/lib/srdb-script.tar
+    depends_on:
+      - tunnel
+      - web
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
