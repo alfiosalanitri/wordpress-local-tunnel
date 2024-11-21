@@ -19,6 +19,10 @@ while [ ! -f $DATA_DIR/tmp/generate_wp_config_preview_step_ready.txt ]; do
 done
 
 sleep 10
+# Create the wp-config.php backup
+echo -e "[+] Backup of the file /var/www/html/wp-config.php in progress..."
+cp /var/www/html/wp-config.php /var/www/html/wp-config.php.bkp
+# Override the original wp-config.php
 echo -e "[+] coping wp-config.php to /var/www/html/wp-config.php..."
 cp $DATA_DIR/wp-config.php /var/www/html/wp-config.php
 echo -e "${GREEN}[✔]${NC} wp-config.php copied"
