@@ -93,7 +93,7 @@ jobs:
 
       - name: Create a ZIP package
         run: |
-          zip -r "${{ steps.repo_name.outputs.repo_name }}.zip" . -x "*.github*" -x "release/*"
+          zip -r "${{ steps.repo_name.outputs.repo_name }}.zip" . -x "*.git*" -x "release/*"
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
