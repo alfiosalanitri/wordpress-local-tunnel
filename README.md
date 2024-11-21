@@ -74,6 +74,7 @@ docker compose up --build
 This will:
 
 - Export your local WordPress database (or use the provided dump file inside import directory) and import it into the Docker MySQL instance.
+- Create a backup of the wp-config.php file to restore manually when the presentation ends.
 - Create the wp-config.php file with Docker credentials.
 - Start MySQL, Apache, and PHP using Docker.
 - Mount your WordPress directory into the Docker container.
@@ -91,6 +92,16 @@ To stop the running Docker containers and the Cloudflare Tunnel, use:
 
 ```bash
 docker compose down
+```
+
+## Restore the wp-config.php file
+
+During container startup, the original wp-config.php file is overwritten, but a backup copy named wp-config.php.bkp is created beforehand.
+
+To make the site work again, manually replace the modified wp-config.php file with the saved backup copy wp-config.php.bkp.
+
+```bash
+cp <WORDPRESS_INSTALL_DIR>/wp-config.php.bkp <WORDPRESS_INSTALL_DIR>/wp-config.php
 ```
 
 ## Troubleshooting

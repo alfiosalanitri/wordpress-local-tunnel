@@ -67,7 +67,9 @@ set_salt_secret_keys() {
   rm -f "$temp_salt_file"
 }
 
-
+# Create the wp-config.php backup
+echo -e "[+] Copying $WP_CONFIG_FILE_PREVIEW file into data/wp-config.php.bkp ..."
+cp $WP_CONFIG_FILE_PREVIEW "${WP_CONFIG_FILE_PREVIEW}.bkp"
 # Create the file wp-config-preview from the original one
 echo -e "[+] Copying $WP_CONFIG_SAMPLE_FILE file into data/wp-config.php ..."
 cp $WP_CONFIG_SAMPLE_FILE $WP_CONFIG_FILE_PREVIEW
