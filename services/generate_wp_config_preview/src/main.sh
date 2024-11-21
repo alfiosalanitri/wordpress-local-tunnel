@@ -67,12 +67,12 @@ set_salt_secret_keys() {
   rm -f "$temp_salt_file"
 }
 
-# Create the wp-config.php backup
-echo -e "[+] Copying $WP_CONFIG_FILE_PREVIEW file into data/wp-config.php.bkp ..."
-cp $WP_CONFIG_FILE_PREVIEW "${WP_CONFIG_FILE_PREVIEW}.bkp"
 # Create the file wp-config-preview from the original one
 echo -e "[+] Copying $WP_CONFIG_SAMPLE_FILE file into data/wp-config.php ..."
 cp $WP_CONFIG_SAMPLE_FILE $WP_CONFIG_FILE_PREVIEW
+# Create the wp-config.php backup
+echo -e "[+] Copying $WP_CONFIG_FILE_PREVIEW file into data/wp-config.php.bkp ..."
+cp $WP_CONFIG_FILE_PREVIEW "${WP_CONFIG_FILE_PREVIEW}.bkp"
 # Change the host in the new wp-config-preview file
 sed -i "s/define( 'DB_HOST', '.*' );/define( 'DB_HOST', 'mysql' );/" "$WP_CONFIG_FILE_PREVIEW"
 # Change the db name in the new wp-config-preview file
