@@ -2,6 +2,8 @@
 
 This repository contains a Docker Compose file that allows you to expose your locally developed WordPress site online using Cloudflare Tunnel via TryCloudflare.
 
+Useful when you want to share a preview of the site under development with a client.
+
 ## Prerequisites
 
 Before using this script, ensure you have the following installed:
