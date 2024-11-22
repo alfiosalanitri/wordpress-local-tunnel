@@ -26,7 +26,7 @@ Make sure that the two variables in the .env file `WORDPRESS_MYSQL_HOST` and `WO
 - **Local Access:** Your WordPress site is accessible only from your local machine at the URL specified in your `.env` file, for example: `https://www.example.local`.
 - **Online Access:** Once the script is run, Cloudflare Tunnel will provide a dynamic public URL that exposes your site online, such as: `https://dynamic-random-string.trycloudflare.com`. This URL allows anyone to access your WordPress site from anywhere on the internet.
 
-## Getting Started
+## Getting Started (how to use)
 
 1. **Clone the Repository:**
 
@@ -65,43 +65,32 @@ Edit the `.env` file to set the following configurations:
 
 Place the `dump.sql` file into the **import** folder if you prefer or if the automatic dump from the first step fails for any reason.
 
-4. **Run:**
+4. **Start the Tunnel:**
 
 ```bash
-docker compose up --build
+./go.sh
 ```
 
 This will:
 
 - Export your local WordPress database (or use the provided dump file inside import directory) and import it into the Docker MySQL instance.
-- Create a backup of the wp-config.php file to restore manually when the presentation ends.
+- Create a backup of the wp-config.php file.
 - Create the wp-config.php file with Docker credentials.
 - Start MySQL, Apache, and PHP using Docker.
 - Mount your WordPress directory into the Docker container.
 - Run `cloudflared` to expose your local WordPress site online.
 - Replace the old url WORDPRESS_LOCAL_URL with the new Cloudflare url https://...trycloudflare.com
 
-5. **Access Your Site:**
+5. **Visit the Site:**
 
-- **Local URL:** `https://www.example.local` (accessible only on your local machine).
-- **Public URL:** The script will output a URL provided by Cloudflare, such as `https://dynamic-random-string.trycloudflare.com`, which you can use to access your WordPress site from anywhere.
+The script will output a URL provided by Cloudflare, such as `https://dynamic-random-string.trycloudflare.com`, which you can use to access your WordPress site from anywhere.
 
-## Stopping the Tunnel
+## Stopping the Tunnel and clear all
 
 To stop the running Docker containers and the Cloudflare Tunnel, use:
 
 ```bash
-docker compose down
-```
-
-## Restore the wp-config.php file
-
-During container startup, the original wp-config.php file is overwritten, but a backup copy named wp-config.php.bkp is created beforehand.
-
-To make the site work again, manually replace the modified wp-config.php file with the saved backup copy wp-config.php.bkp.
-
-```bash
-cp <WORDPRESS_INSTALL_DIR>/wp-config.php.bkp <WORDPRESS_INSTALL_DIR>/wp-config.php
+./go.sh --stop
 ```
 
 ## Troubleshooting
