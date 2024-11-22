@@ -22,6 +22,7 @@ case "$1" in
   "--stop" | "-s")
     # Restore the backup
     cp "$WORDPRESS_INSTALL_DIR/wp-config.php.bkp" "$WORDPRESS_INSTALL_DIR/wp-config.php"
+    rm "$WORDPRESS_INSTALL_DIR/wp-config.php.bkp"
     # Stop Docker
     docker compose down
     # Clear docker images
