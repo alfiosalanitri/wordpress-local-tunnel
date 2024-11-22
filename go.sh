@@ -37,8 +37,8 @@ case "$1" in
         sleep "$INTERVAL"
         ELAPSED=$((ELAPSED + INTERVAL))
     done
-
-    sleep 5
+    echo "[+] Waiting 30 sec for tunnel job..."
+    sleep 30
     cloudflare_random_url=$(grep -oE 'https://[^ ]+trycloudflare\.com\b' data/tmp/tunnel_step_ready.txt)
     echo -e "${GREEN}[✔]${NC} Here we go! Visit: $cloudflare_random_url"
     ;;
