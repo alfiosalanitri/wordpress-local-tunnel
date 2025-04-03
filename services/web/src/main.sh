@@ -21,7 +21,7 @@ done
 sleep 10
 # Override the original wp-config.php
 echo -e "[+] coping wp-config.php to /var/www/html/wp-config.php..."
-cp $DATA_DIR/wp-config.php /var/www/html/wp-config.php
+cp "$DATA_DIR/wp-config.php" /var/www/html/wp-config.php || { echo -e "${RED}[✘]${NC} wp-config.php copy failed!"; exit 1; }
 echo -e "${GREEN}[✔]${NC} wp-config.php copied"
 # Create a file to signal that the this step is ready
 touch $READY_FILE
