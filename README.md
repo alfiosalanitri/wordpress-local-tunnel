@@ -58,6 +58,7 @@ Edit the `.env` file to set the following configurations:
 - `WORDPRESS_DEBUG_LOG`: true or false to enable or disable WORDPRESS_DEBUG_LOG
 - `WORDPRESS_DEBUG_DISPLAY`: true or false to enable or disable WORDPRESS_DEBUG_DISPLAY
 - `WEB_DOCKER_PORT`: Port that exposes Apache in Docker (e.g., `8081`).
+- `WEB_DOCKER_USER`: User that runs the application inside the Docker container (e.g., `www-data`).
 - `MYSQL_DOCKER_PORT`: Port for MySQL in Docker (e.g., `3310`).
 - `MYSQL_DOCKER_ROOT_USER`: Root user for the MySQL instance (e.g., `root`).
 - `MYSQL_DOCKER_ROOT_PASSWORD`: Root password for the MySQL instance (e.g., `root`).
