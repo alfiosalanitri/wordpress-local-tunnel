@@ -8,7 +8,7 @@ Useful when you want to share a preview of the site under development with a cli
 
 Before using this script, ensure you have the following installed:
 
-- [Docker and Docker Compose](https://www.docker.com/) (NO ROOTLESS)
+- [Docker and Docker Compose](https://www.docker.com/)
 
 ## Features
 
