@@ -37,33 +37,6 @@ get_wp_table_prefix() {
   fi
 }
 
-# this function get salt keys fro wordpress api url
-set_salt_secret_keys() {
-  local file=$1
-  local url="https://api.wordpress.org/secret-key/1.1/salt/"
-  local temp_salt_file=$(mktemp)
-
-  # Download the salt from the URL using wget
-  if ! wget -q -O "$temp_salt_file" "$url"; then
-      echo -e "${RED}[x]${NC} Error: Failed to download salt from '$url'."
-      exit 1
-  fi
-
-  # Read the downloaded salt
-  local salt=$(<"$temp_salt_file")
-
-  # Define the string to replace
-  local string='put your unique phrase here'
-
-  # Replace the placeholder with the new salt using sed
-  sed -i "/$string/d" "$file"
-  sed -i "/^$/d" "$file" # Remove empty lines if any
-  echo "$salt" >> "$file"
-
-  # Clean up temporary file
-  rm -f "$temp_salt_file"
-}
-
 # Create the file wp-config-preview from the original one
 echo -e "[+] Copying $WP_CONFIG_SAMPLE_FILE file into data/wp-config.php ..."
 cp $WP_CONFIG_SAMPLE_FILE $WP_CONFIG_FILE_PREVIEW
@@ -83,9 +56,6 @@ sed -i "s/define( 'WP_DEBUG_LOG', false );/define( 'WP_DEBUG_LOG', $WORDPRESS_DE
 table_prefix=$(get_wp_table_prefix "$DATA_DIR/dump.sql")
 # Change the table_prefix in the new wp-config-preview file
 sed -i "s/table_prefix = 'wp_';/table_prefix = '$table_prefix';/" "$WP_CONFIG_FILE_PREVIEW"
-
-# Set the salt secret keys
-set_salt_secret_keys $WP_CONFIG_FILE_PREVIEW
 
 # Fix that prevents infinite loop during site loading
 insert_line="# Prevents infinite loop redirect\n\$_SERVER['HTTPS'] = 'on';"
