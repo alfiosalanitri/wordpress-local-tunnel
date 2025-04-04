@@ -14,7 +14,7 @@ fi
 
 # Loop until the specified file is found, indicating the previous job is done
 while [ ! -f "$DATA_DIR/tmp/database_dump_step_ready.txt" ]; do
-  echo "[+] Waiting for database_dump job..."
+  echo "[+] Waiting for job [database_dump]..."
   sleep 5
 done
 
