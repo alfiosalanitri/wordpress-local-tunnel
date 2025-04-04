@@ -17,7 +17,7 @@ fi
 
 # Loop until the specified file is found, indicating the previous job is done
 while [ ! -f $DATA_DIR/tmp/mysql_step_ready.txt ]; do
-  echo "[+] Waiting for mysql_dump job..."
+  echo "[+] Waiting for job [mysql_dump]..."
   sleep 5
 done
 
@@ -26,11 +26,8 @@ done
 get_wp_table_prefix() {
   local file="$1"
 
-  # Define the search pattern
-  local pattern='([^`]+)_commentmeta'
-
   # Search for the pattern in the file and extract the prefix
-  local prefix=$(grep -oP "$pattern" "$file" | head -n 1 | awk -F'_' '{print $1 "_"}')
+  local prefix=$(grep -o '[^`]\+_commentmeta' "$file" | head -n 1 | awk -F'_commentmeta' '{print $1 "_"}')
   if [[ -n "$prefix" ]]; then
       echo $prefix
       exit 0

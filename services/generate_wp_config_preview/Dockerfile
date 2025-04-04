@@ -1,8 +1,6 @@
-FROM debian:latest
+FROM alpine:latest
 
-RUN  apt-get update \
-  && apt-get install -y wget \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache wget bash
 
 WORKDIR /app
 
@@ -10,4 +8,4 @@ COPY ./src/main.sh /app/data/scripts/generate_wp_config_preview.sh
 
 RUN chmod +x /app/data/scripts/generate_wp_config_preview.sh
 
-ENTRYPOINT ["/app/data/scripts/generate_wp_config_preview.sh"]
+ENTRYPOINT ["/bin/bash", "/app/data/scripts/generate_wp_config_preview.sh"]
