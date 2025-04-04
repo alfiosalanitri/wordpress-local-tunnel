@@ -14,7 +14,7 @@ fi
 
 # Loop until the specified file is found, indicating the previous job is done
 while [ ! -f $DATA_DIR/tmp/generate_wp_config_preview_step_ready.txt ]; do
-  echo "[+] Waiting for generate_wp_config_preview job..."
+  echo "[+] Waiting for job [generate_wp_config_preview]..."
   sleep 5
 done
 

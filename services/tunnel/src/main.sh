@@ -13,7 +13,7 @@ fi
 
 # Loop until the specified file is found, indicating the previous job is done
 while [ ! -f $DATA_DIR/tmp/web_step_ready.txt ]; do
-  echo "[+] Waiting for web job..."
+  echo "[+] Waiting for job [web]..."
   sleep 5
 done
 

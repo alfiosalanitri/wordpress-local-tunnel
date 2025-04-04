@@ -1,8 +1,6 @@
-FROM debian:latest
+FROM alpine:latest
 
-RUN  apt-get update \
-  && apt-get install -y wget \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache wget bash
 
 # install cloudflared
 RUN wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && \

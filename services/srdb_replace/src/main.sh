@@ -15,7 +15,7 @@ fi
 
 # Loop until the specified file is found, indicating the previous job is done
 while [ ! -f $DATA_DIR/tmp/tunnel_step_ready.txt ]; do
-  echo "[+] Waiting for tunnel job..."
+  echo "[+] Waiting for job [tunnel]..."
   sleep 5
 done
 
